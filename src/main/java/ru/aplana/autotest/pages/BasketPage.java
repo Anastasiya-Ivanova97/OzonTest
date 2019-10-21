@@ -80,10 +80,10 @@ public class BasketPage extends BasePage implements Serializable {
 
         Set<Map.Entry<String,String>> entrySet=products.entrySet();
         String key = null;
-        String desiredObject=prices.get(prices.size()-1);//что хотим найти
+        String desiredObject=prices.get(prices.size()-1);
         for (Map.Entry<String,String> pair : entrySet) {
             if (desiredObject.equalsIgnoreCase(pair.getValue())) {
-               key = pair.getKey();// нашли наше значение и возвращаем  ключ
+               key = pair.getKey();
             }
         }
         writer.write("Товар с наибольшей ценой: "+key+" = "+products.get(key).replaceAll("\\u20BD", "P"));
