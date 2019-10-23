@@ -52,6 +52,7 @@ public class BasketPage extends BasePage implements Serializable {
 
     public void checkTotal(String title, Integer number) {
         wait.until(ExpectedConditions.visibilityOf(text1));
+        wait.until(ExpectedConditions.visibilityOf(text2));
         Assert.assertTrue(text1.getText().contains(title)&&text2.getText().contains(number+" товар"));
     }
 
@@ -64,32 +65,5 @@ public class BasketPage extends BasePage implements Serializable {
     public void checkIfEmpty() {
         Assert.assertTrue(emptyBasket.isDisplayed());
     }
-
-    public void writeIntoFile() throws IOException {
-        File file = new File("src/main/resources/items.txt");
-        FileWriter writer = new FileWriter(file);
-        for(Map.Entry<String, String> entry : products.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            writer.write(key+" = "+value.replaceAll("\\u20BD", "P")+"\n");
-        }
-        Collection<String> prices1 =  products.values();
-        List<String> prices = new ArrayList<>();
-        prices.addAll(prices1);
-        Collections.sort(prices);
-
-        Set<Map.Entry<String,String>> entrySet=products.entrySet();
-        String key = null;
-        String desiredObject=prices.get(prices.size()-1);
-        for (Map.Entry<String,String> pair : entrySet) {
-            if (desiredObject.equalsIgnoreCase(pair.getValue())) {
-               key = pair.getKey();
-            }
-        }
-        writer.write("Товар с наибольшей ценой: "+key+" = "+products.get(key).replaceAll("\\u20BD", "P"));
-        writer.flush();
-        writer.close();
-    }
-
 
 }
