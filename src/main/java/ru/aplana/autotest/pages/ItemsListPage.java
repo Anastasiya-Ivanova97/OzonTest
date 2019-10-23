@@ -1,7 +1,7 @@
 package ru.aplana.autotest.pages;
 
-
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -19,18 +19,16 @@ public class ItemsListPage extends BasePage {
 
     WebElement element;
     List<WebElement> available = new ArrayList<>();
-    String temp=null;
-
-
+    String temp = null;
 
     @FindBy(xpath = "//span[contains(text(), \"Высокий рейтинг\")]/parent::label")
     WebElement rating;
 
-    @FindBy(xpath = "//div[@class='cookies-info']/button")
+    @FindBy(xpath = "//div[@class=\"cookies-info\"]/button")
     WebElement cookiesButton;
 
-    @FindBy(xpath = "//div[@class=\"tile-wrapper\"]")
-   List<WebElement> items;
+    @FindBy(xpath = "//*[@class=\"tile-wrapper\"]")
+    List<WebElement> items;
 
     @FindBy(xpath = "//span[contains(text(),\"Корзина\")]/ancestor::a")
     WebElement cartButton;
@@ -41,114 +39,208 @@ public class ItemsListPage extends BasePage {
     @FindBy(xpath = "//div[@class = \"input-wrap search-input\"]/input")
     List<WebElement> inputView;
 
-    @FindBy(xpath = "//label[@class = \"checkbox-label\"]")
+    @FindBy(xpath = "")
     List<WebElement> brandView;
 
     @FindBy(xpath = "//button/span[text()='В корзину']")
     List<WebElement> buttonsAvailable;
 
 
+    String key = "";
+    String value="";
     public void findOption(String option, String p) {
         switch (option) {
             case "Цена до":
-                element = driver.findElement(By.xpath("//div[contains(text(), " + option.substring(0, 3) + ")]/following-sibling::form/descendant::input[2]"));
-                element.click();
-                element.sendKeys(Keys.CONTROL + Keys.chord("a") + Keys.BACK_SPACE + Keys.chord(p));
+                choosePrice(option, p);
                 break;
             case "Оперативная память":
-                new WebDriverWait(driver, 90).until(new ExpectedCondition<Boolean>() {
-                    public Boolean apply(WebDriver webDriver) {
-                        try {
-                            element = driver.findElement(By.xpath("//div[contains(text(), '" + option + "')]/parent::div/descendant::span[contains(text(), '" + p + "')]"));
-                            // wait.until(ExpectedConditions.visibilityOf(element));
-                            element.click();
-                        } catch (StaleElementReferenceException e) {
-                            return false;
-                        }
-
-                        return true;
-                    }
-                });
+                chooseParameter(option, p);
                 break;
             case "Бренды":
-
-                if(brandviewAll.size()!=0) {
-                    brandviewAll.get(0).click();
-                }
-                if (!inputView.isEmpty()) {
-                    click(inputView.get(0));
-                    inputView.get(0).clear();
-                    inputView.get(0).sendKeys(Keys.chord(p));
-                    wait.until(ExpectedConditions.elementToBeClickable(inputView.get(0)));
-                }
-                if (!brandView.isEmpty()) {
-                    for (WebElement brand: brandView) {
-                        if (brand.getText().equalsIgnoreCase(p)) {
-                            click(brand);
-                            return;
-                        }
-                    }
-                }
+                chooseBrands(option, p);
                 break;
-               /* element = driver.findElement(By.xpath("//div[contains(text(), '" + option + "')]/parent::div/descendant::span[contains(text(), '" + p + "')]"));
-                // wait.until(ExpectedConditions.visibilityOf(element));
-                element.click();
-                break; */
         }
     }
 
-    public void closeCookieBanner() {
-        wait.until(ExpectedConditions.visibilityOf(cookiesButton));
-        cookiesButton.click();
+    public void choosePrice(String option, String p) {
+        element = driver.findElement(By.xpath("//div[contains(text(), " + option.substring(0, 3)
+                + ")]/following-sibling::form/descendant::input[2]"));
+        element.click();
+        element.sendKeys(Keys.CONTROL + Keys.chord("a") + Keys.BACK_SPACE + Keys.chord(p));
     }
 
+    public void chooseParameter(String option, String p) {
+        new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                try {
+                    if (isElementPresent(By.xpath("//div[contains(text(), 'Оперативная память')]/parent::div/descendant::span[contains(text(), '3 ГБ')]"))) {
+                        try {
+                            element = driver.findElement(By.xpath("//div[contains(text(), '" + option.substring(0,10)
+                                    + "')]/parent::div/descendant::span[contains(text(), '" + p + "')]"));
+                            element.click();
+                            return true;
+                        } catch (StaleElementReferenceException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+
+                return false;
+            }
+        });
+    }
+    public void chooseBrands(String option, String p) {
+        new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                try {
+            if (isElementPresent(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
+                element = driver.findElement(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+        }
+        if (isElementPresent(By.xpath("//div[@class = 'input-wrap search-input']/input"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
+            element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+            element.clear();
+            element.sendKeys(Keys.chord(p));
+        }
+        if (isElementPresent(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
+            element = driver.findElement(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"));
+            WebDriverWait wait1 = new WebDriverWait(driver, 10);
+            wait1.until(ExpectedConditions.elementToBeClickable(element));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+            element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
+            wait1.until(ExpectedConditions.elementToBeClickable(element));
+        }
+        return true;
+                } catch (StaleElementReferenceException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+    }
+});
+
+       /* Actions actions = new Actions(driver);
+        actions.moveToElement(inputView.get(0)).click().build().perform();
+
+        inputView.get(0).clear();
+        inputView.get(0).sendKeys(Keys.chord(p)); */
+
+     //   actions.moveToElement(inputView.get(0)).click().build().perform();
+     //   element = driver.findElement(By.xpath("//*[contains(text(),'Beats')]/parent::label"));
+
+       // WebDriverWait wait = new WebDriverWait(driver, 10);
+      //  WebElement el_brand = wait.until(ExpectedConditions.elementToBeClickable(element));
+      //  click(el_brand);
+    }
+
+    public void closeCookieBanner() {
+        WebDriverWait wait = new WebDriverWait(driver, 15);
+        WebElement el = wait
+                .until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class=\"cookies-info\"]/button")));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click()", el);
+    }
 
     public WebElement getRating() {
         return rating;
     }
 
-    public void selectItems() {
-
-        System.out.println(items.size());
-       // wait.until(ExpectedConditions.stalenessOf(items)));
-        new WebDriverWait(driver, 120).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver webDriver) {
-                try {
-                    for (WebElement el : items) {
-                     if(el.findElement(By.xpath(".//button")).getText().contains("В корзину")) {
-                             available.add(el);
-                      }
-                    }
-                } catch (StaleElementReferenceException e) {
-                    return false;
-                }
-
-                return true;
-            }
-        });
-      /*  for (WebElement el:items) {
-
-            if(el.findElement(By.xpath("./descendant::button/span")).getText().equalsIgnoreCase("В корзину")) {
-                available.add(el);
-            }
-        } */
-        System.out.println(available.size());
+    public boolean existsElement(WebElement el) {
+        try {
+            el.findElement(By.xpath(".//*[text()='В корзину']"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
 
     }
 
-        public void selectOdd() {
+    private boolean existsElementOpenBrend(WebDriver el) {
+        try {
+            el.findElement(By.xpath("//span[@data-test-id=\"filter-block-brand-show-all\"]"));
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return true;
+    }
 
-       new WebDriverWait(driver, 120).until(new ExpectedCondition<Object>() {
+    public void fillMap(WebElement element) {
 
+        new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                try {
+        if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-name']")) && isElementPresent(element, By.xpath(".//*[@data-test-id='tile-price']"))&& isElementPresent(By.xpath("//*[@data-test-id='tile-price']"))&& isElementPresent(By.xpath("//*[@data-test-id='tile-name']"))) {
+            if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-name']"))) {
+                 key = element.findElement(By.xpath(".//*[@data-test-id='tile-name']")).getText();
+                if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-price']"))) {
+                    value = element.findElement(By.xpath(".//*[@data-test-id='tile-price']")).getText();
+                }
+            }
+            products.put(key, value);
+        }
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+            }
+        });
+    }
+
+    public void selectsItems(String diff) {
+        new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver webDriver) {
+                try {
+        for (WebElement el : items) {
+               if(isElementPresent(el,By.xpath(".//*[text()='В корзину']"))) {
+                   switch (diff) {
+                       case "четных":
+                           if (items.indexOf(el) % 2 != 0) {
+                               System.out.println("1");
+                               buy(el);
+                               fillMap(el);
+                           }
+                           break;
+                       case "нечетных":
+                           if (items.indexOf(el) % 2 == 0) {
+                               buy(el);
+                               fillMap(el);
+
+                           }
+                           break;
+                   }
+
+               }
+            }
+            return true;
+                } catch (StaleElementReferenceException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+            }
+        });
+          /*  new WebDriverWait(driver, 30).until(new ExpectedCondition<Boolean>() {
                 public Boolean apply(WebDriver webDriver) {
                     try {
-                        for (WebElement ell: available) {
-                            element = ell.findElement(By.xpath("./descendant::button"));
-                            if(available.indexOf(ell)%2==0) {
-                                element.click();
-                                products.put(ell.findElement(By.xpath("./descendant::a")).getText(), ell.findElement(By.xpath("./descendant::span[@data-test-id='tile-price']")).getText());
+                        System.out.println(items.size());
+                        for (WebElement el : items) {
+
+                            if (existsElement(el)) {
+                                element = el
+                                        .findElement(By.xpath(".//*[text()='В корзину']"));
+
+
+                                if (items.indexOf(el) % 2 != 0) {
+                                    // ((JavascriptExecutor)driver).executeScript("arguments[0].click()", element);
+                                    buy();
+                                }
                             }
                         }
+
                     } catch (StaleElementReferenceException e) {
                         return false;
                     }
@@ -156,23 +248,47 @@ public class ItemsListPage extends BasePage {
                     return true;
                 }
             });
-            // products.put(available.get(i).findElement(By.xpath("./descendant::a")).getText(), available.get(i).findElement(By.xpath("./descendant::span[@data-test-id='tile-price']")).getText());
-            System.out.println(products);
-
+ */
         }
 
-        public void selectEven() {
-            new WebDriverWait(driver, 120).until(new ExpectedCondition<Object>() {
+        private void buy (WebElement elem) {
+            new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver webDriver) {
 
+                    try {
+                        if(isElementPresent(elem,By.xpath(".//*[text()='В корзину']/parent::button"))) {
+                            element = elem.findElement(By.xpath(".//*[text()='В корзину']/parent::button"));
+                            ((JavascriptExecutor) driver).executeScript("arguments[0].click()",
+                                    element);
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        return false;
+                    }
+                    return false;
+
+                }
+            });
+        }
+/*
+        public void selectEvenItems () {
+            new WebDriverWait(driver, 30).until(new ExpectedCondition<Boolean>() {
                 public Boolean apply(WebDriver webDriver) {
                     try {
-                        for (WebElement ell: available) {
-                            element = ell.findElement(By.xpath("./descendant::button"));
-                            if(available.indexOf(ell)%2!=0) {
-                                element.click();
-                                products.put(ell.findElement(By.xpath("./descendant::a")).getText(), ell.findElement(By.xpath("./descendant::span[@data-test-id='tile-price']")).getText());
+                        System.out.println(items.size());
+                        for (WebElement el : items) {
+
+                            if (existsElement(el)) {
+                                element = el
+                                        .findElement(By.xpath(".//*[text()='В корзину']"));
+                                if (items.indexOf(el) % 2 != 0) {
+                                    // ((JavascriptExecutor)driver).executeScript("arguments[0].click()", element);
+                                   // buy();
+                                }
                             }
                         }
+
                     } catch (StaleElementReferenceException e) {
                         return false;
                     }
@@ -180,17 +296,36 @@ public class ItemsListPage extends BasePage {
                     return true;
                 }
             });
-            // products.put(available.get(i).findElement(By.xpath("./descendant::a")).getText(), available.get(i).findElement(By.xpath("./descendant::span[@data-test-id='tile-price']")).getText());
-            System.out.println(products);
 
         }
 
+        public void selectOddItems () {
+            new WebDriverWait(driver, 30).until(new ExpectedCondition<Boolean>() {
+                public Boolean apply(WebDriver webDriver) {
+                    try {
+                        System.out.println(items.size());
+                        for (WebElement el : items) {
 
+                            if (existsElement(el)) {
+                                element = el
+                                        .findElement(By.xpath(".//*[text()='В корзину']"));
+                                if (items.indexOf(el) % 2 == 0) {
+                                    // ((JavascriptExecutor)driver).executeScript("arguments[0].click()", element);
+                                  //  buy();
+                                }
+                            }
+                        }
+
+                    } catch (StaleElementReferenceException e) {
+                        return false;
+                    }
+
+                    return true;
+                }
+            });
+        }
+*/
     public WebElement getCartButton() {
         return cartButton;
     }
 }
-
-
-
-
