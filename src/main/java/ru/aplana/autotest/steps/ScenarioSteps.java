@@ -2,10 +2,12 @@ package ru.aplana.autotest.steps;
 
 import cucumber.api.java.ru.Когда;
 import io.qameta.allure.Step;
+import org.openqa.selenium.Keys;
 import ru.aplana.autotest.pages.BasketPage;
 import ru.aplana.autotest.pages.ItemsListPage;
 import ru.aplana.autotest.pages.MainPage;
 import ru.aplana.autotest.util.AllureListener;
+import ru.aplana.autotest.util.FileWorker;
 
 import java.io.IOException;
 
@@ -17,7 +19,7 @@ public class ScenarioSteps {
     @Когда("выбран товар (.*)")
     @Step("выбран товар {0}")
     public void inputItemNameAndSearch(String name) {
-       mainPage.search(name);
+        mainPage.input(mainPage.getSearchString(),name+ Keys.ENTER);
     }
 
     @Когда("скрыт баннер с куки")
@@ -30,6 +32,7 @@ public class ScenarioSteps {
     @Step("выбрана опция {0} с параметром {1}")
     public void chooseOption(String optionName, String par) {
         itemsListPage.findOption(optionName, par);
+
     }
 
     @Когда("поставлена галочка Высокий рейтинг")
@@ -38,18 +41,12 @@ public class ScenarioSteps {
         itemsListPage.getRating().click();
     }
 
-    @Когда("выбор нечетных элементов из списка")
-    @Step("выбор нечетных элементов из списка")
-    public void selectListItems() {
-        itemsListPage.selectItems();
-        itemsListPage.selectOdd();
-    }
 
-    @Когда("выбор четных элементов из списка")
-    @Step("выбор четных элементов из списка")
-    public void selectAnotherListItems() {
-        itemsListPage.selectItems();
-        itemsListPage.selectEven();
+    @Когда("выбор (.*) элементов из списка")
+    @Step("выбор {0} элементов из списка")
+    public void selectsListItems(String choice) {
+        itemsListPage.selectsItems(choice);
+        //itemsListPage.selectEven();
     }
 
     @Когда("переход в корзину")
@@ -83,12 +80,15 @@ public class ScenarioSteps {
         basketPage.checkIfEmpty();
     }
 
-    @Когда("записать наименования товаров в файл и прикрепить к отчету")
-    @Step("записать наименования товаров в файл и прикрепить к отчету")
-    public void writeAndAttach() throws IOException {
-        basketPage.writeIntoFile();
-        AllureListener.getBytes("items.txt");
+    @Когда("записать наименования товаров в файл и прикрепить к отчету (.*)")
+    @Step("записать наименования товаров в файл и прикрепить к отчету {0}")
+    public void writeAndAttach(String name) throws IOException {
+        FileWorker.writeIntoFile(name);
+        AllureListener.getBytes(name);
     }
+
+
+
 
 
 }
