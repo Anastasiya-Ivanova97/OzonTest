@@ -9,9 +9,7 @@ public class MainPage extends BasePage {
     @FindBy(xpath = "//input[@class='search-input']")
     WebElement searchString;
 
-
-    public void search(String searchFor) {
-        searchString.click();
-        searchString.sendKeys(Keys.chord(searchFor+Keys.ENTER));
+    public WebElement getSearchString() {
+        return searchString;
     }
 }
