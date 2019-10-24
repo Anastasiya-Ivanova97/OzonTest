@@ -22,8 +22,9 @@ public class BasePage {
 
     public boolean isElementPresent(By locator) {
         try{
-            driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
-            driver.findElement(locator).isDisplayed();
+            WebElement element = driver.findElement(locator);
+            driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+            wait.until(ExpectedConditions.visibilityOf(element));
             return true;
         } catch (Exception e) {
             driver.manage().timeouts().implicitlyWait(45,TimeUnit.SECONDS);
@@ -34,8 +35,9 @@ public class BasePage {
 
     public boolean isElementPresent(WebElement element, By locator) {
         try{
-            element.findElement(locator).isDisplayed();
-            driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+            WebElement elemen =  element.findElement(locator);
+            driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+            wait.until(ExpectedConditions.visibilityOf(elemen));
             return true;
         } catch (Exception e) {
             driver.manage().timeouts().implicitlyWait(45,TimeUnit.SECONDS);
