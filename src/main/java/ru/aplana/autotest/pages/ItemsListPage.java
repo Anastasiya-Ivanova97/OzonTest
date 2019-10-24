@@ -14,6 +14,8 @@ import java.util.function.Function;
 
 public class ItemsListPage extends BasePage {
 
+    int count=0;
+
     public ItemsListPage() {
     }
 
@@ -58,6 +60,7 @@ public class ItemsListPage extends BasePage {
                 break;
             case "Бренды":
                 chooseBrands(option, p);
+                count++;
                 break;
         }
     }
@@ -106,10 +109,16 @@ public class ItemsListPage extends BasePage {
             element.sendKeys(Keys.chord(p));
         }
         if (isElementPresent(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
-            element = driver.findElement(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"));
+                element = driver.findElement(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"));
             WebDriverWait wait1 = new WebDriverWait(driver, 10);
             wait1.until(ExpectedConditions.elementToBeClickable(element));
             ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+            if(count>0){
+                if(isElementPresent(By.xpath("//*[text()=' найдено 9 товаров']"))){
+                    WebElement element = driver.findElement(By.xpath("//*[text()=' найдено 9 товаров']"));
+                    wait1.until(ExpectedConditions.visibilityOf(element));
+                }
+            }
             element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
             wait1.until(ExpectedConditions.elementToBeClickable(element));
         }
@@ -195,11 +204,11 @@ public class ItemsListPage extends BasePage {
             public Boolean apply(WebDriver webDriver) {
                 try {
         for (WebElement el : items) {
-               if(isElementPresent(el,By.xpath(".//*[text()='В корзину']"))) {
+               if(isElementPresent(el,By.xpath(".//*[text()='В корзину']"))&&isElementPresent(By.xpath("//*[text()='В корзину']"))) {
                    switch (diff) {
                        case "четных":
                            if (items.indexOf(el) % 2 != 0) {
-                               System.out.println("1");
+                              // System.out.println("1");
                                buy(el);
                                fillMap(el);
                            }
