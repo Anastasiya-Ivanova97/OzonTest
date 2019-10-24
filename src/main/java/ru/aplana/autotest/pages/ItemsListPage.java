@@ -155,7 +155,7 @@ public class ItemsListPage extends BasePage {
     public WebElement getRating() {
         return rating;
     }
-
+    /*
     public boolean existsElement(WebElement el) {
         try {
             el.findElement(By.xpath(".//*[text()='В корзину']"));
@@ -173,7 +173,7 @@ public class ItemsListPage extends BasePage {
             return false;
         }
         return true;
-    }
+    } */
 
     public void fillMap(WebElement element) {
 
