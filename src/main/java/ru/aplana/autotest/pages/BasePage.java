@@ -21,24 +21,34 @@ public class BasePage {
     }
 
     public boolean isElementPresent(By locator) {
+
         try{
+
+            driver.manage().timeouts().implicitlyWait(1,TimeUnit.SECONDS);
+
             WebElement element = driver.findElement(locator);
-            driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
-            wait.until(ExpectedConditions.visibilityOf(element));
-            return true;
+
+            return element.isDisplayed();
+
         } catch (Exception e) {
+
             driver.manage().timeouts().implicitlyWait(45,TimeUnit.SECONDS);
+
             e.printStackTrace();
+
             return false;
+
         }
+
     }
+
+
 
     public boolean isElementPresent(WebElement element, By locator) {
         try{
+            driver.manage().timeouts().implicitlyWait(1,TimeUnit.SECONDS);
             WebElement elemen =  element.findElement(locator);
-            driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
-            wait.until(ExpectedConditions.visibilityOf(elemen));
-            return true;
+            return elemen.isDisplayed();
         } catch (Exception e) {
             driver.manage().timeouts().implicitlyWait(45,TimeUnit.SECONDS);
             e.printStackTrace();
