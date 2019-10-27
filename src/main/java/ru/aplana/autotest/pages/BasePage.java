@@ -23,21 +23,13 @@ public class BasePage {
     public boolean isElementPresent(By locator) {
 
         try{
-
             driver.manage().timeouts().implicitlyWait(1,TimeUnit.SECONDS);
-
             WebElement element = driver.findElement(locator);
-
             return element.isDisplayed();
-
         } catch (Exception e) {
-
             driver.manage().timeouts().implicitlyWait(45,TimeUnit.SECONDS);
-
             e.printStackTrace();
-
             return false;
-
         }
 
     }
