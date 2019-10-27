@@ -63,11 +63,9 @@ public class BasketPage extends BasePage implements Serializable {
     }
 
     public void checkIfEmpty() {
-
         wait.until(ExpectedConditions.visibilityOf(emptyBasket));
-
         Assert.assertTrue(emptyBasket.isDisplayed());
-
+]
     }
 
 }
