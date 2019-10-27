@@ -34,7 +34,7 @@ public class BaseSteps {
         driver .manage().timeouts().pageLoadTimeout(Integer.parseInt(testProperties.getProperty("timeout.pageLoad")), TimeUnit.SECONDS);
     }
 
-
+    @After
     public static void tearDown() {
         driver.quit();
     }
