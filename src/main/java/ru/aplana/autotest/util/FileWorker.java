@@ -34,5 +34,6 @@ public class FileWorker {
         writer.write("Товар с наибольшей ценой: "+key+" = "+products.get(key).replaceAll("\\u20BD", "P"));
         writer.flush();
         writer.close();
+        products.clear();
     }
 }
