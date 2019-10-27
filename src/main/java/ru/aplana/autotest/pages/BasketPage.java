@@ -50,10 +50,10 @@ public class BasketPage extends BasePage implements Serializable {
         });
     }
 
-    public void checkTotal(String title, Integer number) {
+    public void checkTotal(String title) {
         wait.until(ExpectedConditions.visibilityOf(text1));
         wait.until(ExpectedConditions.visibilityOf(text2));
-        Assert.assertTrue(text1.getText().contains(title)&&text2.getText().contains(number+" товар"));
+        Assert.assertTrue(text1.getText().contains(title)&&text2.getText().contains(ItemsListPage.number+" товар"));
     }
 
     public void deleteAll() {
@@ -63,7 +63,11 @@ public class BasketPage extends BasePage implements Serializable {
     }
 
     public void checkIfEmpty() {
+
+        wait.until(ExpectedConditions.visibilityOf(emptyBasket));
+
         Assert.assertTrue(emptyBasket.isDisplayed());
+
     }
 
 }
