@@ -15,6 +15,7 @@ import java.util.function.Function;
 public class ItemsListPage extends BasePage {
 
     int count=0;
+    public static int number = 0;
 
     public ItemsListPage() {
     }
@@ -54,6 +55,7 @@ public class ItemsListPage extends BasePage {
         switch (option) {
             case "Цена до":
                 choosePrice(option, p);
+                number=0;
                 break;
             case "Оперативная память":
                 chooseParameter(option, p);
@@ -95,41 +97,34 @@ public class ItemsListPage extends BasePage {
         });
     }
     public void chooseBrands(String option, String p) {
-        new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver webDriver) {
-                try {
-            if (isElementPresent(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
-                element = driver.findElement(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']"));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+        waitPageLoaded();
+        if (isElementPresent(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']"))) {
+            ((JavascriptExecutor) driver)
+                    .executeScript("arguments[0].click()", driver.findElement(By.xpath("//span[@data-test-id = 'filter-block-brand-show-all']")));
+
+
+
         }
-        if (isElementPresent(By.xpath("//div[@class = 'input-wrap search-input']/input"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
-            element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
-            element.clear();
-            element.sendKeys(Keys.chord(p));
-        }
-        if (isElementPresent(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"))&&!isElementPresent(By.xpath("//div[@class = 'parandja']"))) {
-                element = driver.findElement(By.xpath("//*[contains(text(),'"+p+"')]/parent::label"));
-            WebDriverWait wait1 = new WebDriverWait(driver, 10);
-            wait1.until(ExpectedConditions.elementToBeClickable(element));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
-            if(count>0){
-                if(isElementPresent(By.xpath("//*[text()=' найдено 9 товаров']"))){
-                    WebElement element = driver.findElement(By.xpath("//*[text()=' найдено 9 товаров']"));
-                    wait1.until(ExpectedConditions.visibilityOf(element));
-                }
-            }
-            element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
-            wait1.until(ExpectedConditions.elementToBeClickable(element));
-        }
-        return true;
-                } catch (StaleElementReferenceException e) {
-                    e.printStackTrace();
-                    return false;
-                }
+        waitPageLoaded();
+        element = driver.findElement(By.xpath("//div[@class = 'input-wrap search-input']/input"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+        element.clear();
+        element.sendKeys(Keys.chord(p));
+        waitPageLoaded();
+        element = driver.findElement(By.xpath("//*[contains(text(),'" + p + "')]/parent::label"));
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click()", element);
+    }
+
+    public void waitPageLoaded() {
+
+        new WebDriverWait(driver, 45)
+
+                .until((ExpectedCondition<Boolean>) webDriver -> !isElementPresent(By.xpath("//div[contains(@class , 'parandja')]")));
 
     }
-});
+
+
 
        /* Actions actions = new Actions(driver);
         actions.moveToElement(inputView.get(0)).click().build().perform();
@@ -143,7 +138,7 @@ public class ItemsListPage extends BasePage {
        // WebDriverWait wait = new WebDriverWait(driver, 10);
       //  WebElement el_brand = wait.until(ExpectedConditions.elementToBeClickable(element));
       //  click(el_brand);
-    }
+
 
     public void closeCookieBanner() {
         WebDriverWait wait = new WebDriverWait(driver, 15);
@@ -180,16 +175,11 @@ public class ItemsListPage extends BasePage {
         new WebDriverWait(driver, 45).until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver) {
                 try {
-        if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-name']")) && isElementPresent(element, By.xpath(".//*[@data-test-id='tile-price']"))&& isElementPresent(By.xpath("//*[@data-test-id='tile-price']"))&& isElementPresent(By.xpath("//*[@data-test-id='tile-name']"))) {
-            if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-name']"))) {
-                 key = element.findElement(By.xpath(".//*[@data-test-id='tile-name']")).getText();
-                if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-price']"))) {
+        if (isElementPresent(element, By.xpath(".//*[@data-test-id='tile-name']")) && isElementPresent(element, By.xpath(".//*[@data-test-id='tile-price']"))) {
+                    key = element.findElement(By.xpath(".//*[@data-test-id='tile-name']")).getText();
                     value = element.findElement(By.xpath(".//*[@data-test-id='tile-price']")).getText();
-                }
-            }
-            products.put(key, value);
-        }
-                    return true;
+                    products.put(key, value);
+        }           return true;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return false;
@@ -204,19 +194,21 @@ public class ItemsListPage extends BasePage {
             public Boolean apply(WebDriver webDriver) {
                 try {
         for (WebElement el : items) {
-               if(isElementPresent(el,By.xpath(".//*[text()='В корзину']"))&&isElementPresent(By.xpath("//*[text()='В корзину']"))) {
+               if(isElementPresent(el,By.xpath(".//*[contains(text(), 'В корзину')]"))&&isElementPresent(By.xpath("//*[contains(text(), 'В корзину')]"))) {
                    switch (diff) {
                        case "четных":
                            if (items.indexOf(el) % 2 != 0) {
                               // System.out.println("1");
                                buy(el);
                                fillMap(el);
+                               number++;
                            }
                            break;
                        case "нечетных":
                            if (items.indexOf(el) % 2 == 0) {
                                buy(el);
                                fillMap(el);
+                               number++;
 
                            }
                            break;
@@ -265,8 +257,8 @@ public class ItemsListPage extends BasePage {
                 public Boolean apply(WebDriver webDriver) {
 
                     try {
-                        if(isElementPresent(elem,By.xpath(".//*[text()='В корзину']/parent::button"))) {
-                            element = elem.findElement(By.xpath(".//*[text()='В корзину']/parent::button"));
+                        if(isElementPresent(elem,By.xpath(".//*[contains(text(), 'В корзину')]/parent::button"))) {
+                            element = elem.findElement(By.xpath(".//*[contains(text(), 'В корзину')]/parent::button"));
                             ((JavascriptExecutor) driver).executeScript("arguments[0].click()",
                                     element);
                             return true;
