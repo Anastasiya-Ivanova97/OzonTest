@@ -61,11 +61,11 @@ public class ScenarioSteps {
         basketPage.checkNames();
     }
 
-    @Когда("проверка отображения текста (.*) и количества товаров - (.*)")
-    @Step("проверка отображения текста {0} и количества товаров - {1}")
-    public void checkNumberOfItems(String name, Integer q) {
+    @Когда("проверка отображения текста (.*) и количества товаров")
+    @Step("проверка отображения текста {0} и количества товаров")
+    public void checkNumberOfItems(String name) {
 
-        basketPage.checkTotal(name,q);
+        basketPage.checkTotal(name);
     }
 
     @Когда("удалить все товары из корзины")
